@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Quantum Gardens Mobile</title>
+  <link rel="shortcut icon" href="../favicon.ico" />
+  <link type="text/css" href="../css/style.css" rel="stylesheet" /> 
+  <link type="text/css" href="../css/le-frog/jquery-ui-1.9.2.custom.css" rel="stylesheet">
+  <link type="text/css" href="mobile.css" rel="stylesheet">
+  <script src="../lib/modernizr.custom.js"></script>
+  <script src="../lib/jquery.191.min.js"></script>
+  <script src="../lib/jquery-ui.192.min.js"></script>
+  <script src="../lib/gj-js-api-min.js"></script>
+  <script src="../lib/crafty-063-min.js"></script>
+  <script src="../lib/underscore-min.js"></script>
+  <script src="../lib/backbone-min.js"></script>
+  <script src="../lib/graph.js"></script>
+  <script src="../lib/astar.js"></script>
+</head>
+<body>
+  <div id="dialog-save-score" style="display:none;"></div>
+  <div id="dialog-score" style="display:none;"></div>
+  <div id="dialog-howto" style="display:none;"></div>
+  <div id="dialog-credits" style="display:none;"></div>
+  <div id="dialog-restart" style="display:none;"></div>
+  <div id="fps" style="display:none;"></div>
+
+  <div id="wrapper">
+    <div id="left-frame" style="display:none;"></div>
+    <div id="right-frame" style="display:none;"></div>
+    <div id="bottom-frame" style="display:none;"></div>
+
+    <div id="stage">
+      <div id="msgs" class="text center"></div>
+      <div id="concept-cloud" style="display:none;"></div>
+      <div id="loading" class="text left" style="display:none;"></div>
+      <div id="stats" style="display:none;">
+        <div id="timer" class="text timer"></div>
+        <div id="carrots" class="text carrots"></div>
+      </div>
+      <div id="in-menu" style="display:none;">
+        <div id="toggle-music"></div>
+        <div id="toggle-sfx"></div>
+      </div>
+      <div id="menu" style="display:none;">
+        <div id="menu-start" class="button" style="left:76px">Start</div>
+        <div id="menu-howto" class="button" style="left:248px">How to Play</div>
+        <div id="menu-hiscore" class="button" style="left:438px">Hiscores</div>
+        <div id="menu-credits" class="button" style="left:618px">Credits</div>
+      </div>
+    </div>
+  </div>
+  <p class="safari" style="display:none;"></p>
+  <div id="logo" style="display:none;"></div>
+
+  <!-- Runtime config -->
+  <script>
+    var ver = new Date().getTime();
+    window._Globals = { env:'dev', version:ver, scene:'splash' };
+    var require = { waitSeconds:15, urlArgs:"bust="+ver };
+  </script>
+  <!-- Concepts and game bootstrap -->
+  <script src="../src/quantum_concepts.js"></script>
+  <script data-main="../src/bootstrap" src="../lib/require.js"></script>
+  <!-- Mobile scaling + controls -->
+  <script src="mobile_controls.js"></script>
+</body>
+</html>
+

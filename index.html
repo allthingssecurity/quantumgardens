@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="Quantum Gardens is an HTML5 learning game about quantum concepts.">
+    <meta name="keywords" content="quantum gardens, learning game, html5, javascript, quantum mechanics, 2D game">    
+    <title>Quantum Gardens</title>
+    <script type="text/javascript" src="lib/modernizr.custom.js"></script>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link type="text/css" href="css/style.css" rel="stylesheet" /> 
+    <link type="text/css" href="css/le-frog/jquery-ui-1.9.2.custom.css" rel="stylesheet">
+    <script type="text/javascript" src="lib/jquery.191.min.js"></script>
+    <script type="text/javascript" src="lib/jquery-ui.192.min.js"></script>
+    <script type="text/javascript" src="lib/gj-js-api-min.js"></script>
+    <script type="text/javascript" src="lib/crafty-063-min.js"></script>
+    <script type="text/javascript" src="lib/underscore-min.js"></script>
+    <script type="text/javascript" src="lib/backbone-min.js"></script>
+    <script type="text/javascript" src="lib/graph.js"></script>
+    <script type="text/javascript" src="lib/astar.js"></script>
+</head>
+<body>
+<!--[if lt IE 8]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+    <div id="dialog-save-score" style="display: none;"></div>
+    <div id="dialog-score" style="display: none;"></div>
+    <div id="dialog-howto" style="display: none;">
+    <h1>Quantum Gardens</h1>
+    <p>
+    Welcome to Quantum Gardens. Each carrot you pluck reveals a short quantum concept.
+    Concepts pop up as a small cloud and get saved in your Book. Open the Book to review,
+    flip pages, and learn at your pace—all while dodging rivals.
+    </p>
+    <h1>Goal &amp; Controls</h1>
+    <ul>
+        <li><span class="keys">Arrow keys</span> - Move.</li>
+        <li><span class="keys">Z (or Y)</span> - Hold to pluck a carrot (reveals a concept).</li>
+        <li><span class="keys">Q</span> - Spend 1 carrot to push enemies away.</li>
+        <li><span class="keys">W</span> - Spend 2 carrots to drop a decoy.</li>
+        <li><span class="keys">P</span> - Open/close the Book (pauses the game).</li>
+    </ul>
+    </div>
+    <div id="dialog-book" style="display:none;">
+        <div id="book-container">
+            <div id="book-page"></div>
+            <div id="book-pager">
+                <button id="book-prev">Prev</button>
+                <span id="book-page-num">1/1</span>
+                <button id="book-next">Next</button>
+            </div>
+        </div>
+    </div>
+    <div id="dialog-credits" style="display: none;">
+        <p>Game design and programming - <a href="http://petarov.vexelon.net">Petar Petrov</a></p>
+        <br />
+        <p>Art and graphics - <a href="http://stremena.com/">Stremena Tuzsuzova</a></p>
+        <br />
+        <p>Sound and Music - <a href="https://github.com/petarov/game-off-2012#sound-and-music">See here</a></p>
+    </div>
+    <div id="dialog-restart" style="display: none;">Would you like to restart the game?</div>
+    
+    <div id="fps" style="display: none;"></div>
+
+    <div id="wrapper">
+        <div id="left-frame" style="display: none;"></div>
+        <div id="right-frame" style="display: none;"></div>           
+        <div id="bottom-frame" style="display: none;"></div>
+
+        <div id="stage">
+            <div id="msgs" class="text center"></div>
+            <div id="concept-cloud" style="display:none;"></div>
+            <div id="loading" class="text left" style="display: none;"></div>
+            <div id="stats" style="display: none;">
+                <div id="timer" class="text timer"></div>
+                <div id="carrots" class="text carrots"></div>
+            </div>
+            <div id="in-menu" style="display: none;">
+                <div id="toggle-music"></div>
+                <div id="toggle-sfx"></div>
+            </div>
+            <div id="menu" style="display: none;">
+                <div id="menu-start" class="button" style="left: 76px">Start</div>
+                <div id="menu-howto" class="button" style="left: 248px">How to Play</div>
+                <div id="menu-hiscore" class="button" style="left: 438px">Hiscores</div>
+                <div id="menu-credits" class="button" style="left: 618px">Credits</div>
+            </div>
+        </div>
+    </div>
+    <p class="safari">Music and sounds are currently not supported on Safari. :(</p>
+    <div id="logo">
+        <div id="version" style="display: none;"></div>
+    </div>
+    <!--URCHIN-->
+<script type="text/javascript">
+var ver = new Date().getTime();
+window._Globals = {env:'dev', version:ver, scene:'splash'};
+var require = {waitSeconds:15, urlArgs:"bust="+ver};
+</script>
+<!-- Load extracted quantum concepts -->
+<script type="text/javascript" src="src/quantum_concepts.js"></script>
+<script data-main="src/bootstrap" src="lib/require.js">
+</script
+</body>
+</html>
