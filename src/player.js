@@ -208,11 +208,6 @@ Player = ActorObject.extend({
                             
                             this.trigger('HidePullBar');
                             Crafty.trigger("UpdateStats");
-                            // Learning: emit concept learned
-                            if (window.QuantumLearning && window.QuantumConcepts){
-                                var txt = window.QuantumLearning.nextConcept();
-                                if (txt){ Crafty.trigger('ConceptLearned', txt); }
-                            }
                             Crafty.trigger('ShowMsg', 'clear');
                             
                             // play sound

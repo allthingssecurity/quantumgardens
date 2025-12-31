@@ -9,8 +9,14 @@
     this.pools = pools;
     this.levelIndex = 0; // 0: basics, 1: intermediate, 2: advanced
     this.sequence = [];
-    this.learned = [];
-    this.page = 0;
+    // Restore learned concepts from localStorage if available
+    var saved = [];
+    try {
+      var raw = localStorage.getItem('qg_book');
+      if (raw) saved = JSON.parse(raw);
+    } catch(e) { saved = []; }
+    this.learned = Array.isArray(saved) ? saved : [];
+    this.page = Math.max(0, this.learned.length - 1);
   };
   Learning.prototype.nextConcept = function(){
     // Determine current pool based on levelIndex
@@ -40,9 +46,14 @@
     if (typeof entry === 'object') entry._tier = poolName;
     return entry;
   };
-  Learning.prototype.addLearned = function(text){
-    this.learned.push(text);
+  Learning.prototype.addLearned = function(entry){
+    // Deduplicate by title
+    var title = (entry && entry.title) ? entry.title : (typeof entry === 'string' ? entry : 'Concept');
+    var key = String(title||'').toLowerCase();
+    var exists = this.learned.some(function(e){ return String((e && e.title) ? e.title : e).toLowerCase() === key; });
+    if (!exists){ this.learned.push({title: title, body: (entry && entry.body) ? entry.body : ''}); }
     this.page = this.learned.length-1;
+    try { localStorage.setItem('qg_book', JSON.stringify(this.learned)); } catch(e) {}
   };
   Learning.prototype.toggleBook = function(){
     var self=this;
@@ -112,6 +123,8 @@
   // Global game pause + concept stats
   window.GamePaused = false;
   window.ConceptStats = window.ConceptStats || {player:0, enemies:0};
+  // Initialize player concept count from restored book
+  try { window.ConceptStats.player = instance.learned.length|0; } catch(e) {}
   window.MusicWasPlayingOnBookOpen = false;
 
   // Level goals aligned with tiers
