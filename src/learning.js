@@ -1,13 +1,44 @@
 /* Quantum learning layer: concept cloud + book */
 (function(){
   var Learning = function(){
-    this.concepts = (window.QuantumConcepts||[]).slice();
+    // Build tiered pools once
+    var all = (window.QuantumConcepts||[]).slice();
+    var pools = (window.QuantumTiering && window.QuantumTiering.build) ? window.QuantumTiering.build(all) : {basics:all, intermediate:[], advanced:[], remaining:[]};
+    // Merge remaining into basics as fallback
+    pools.basics = (pools.basics||[]).concat(pools.remaining||[]);
+    this.pools = pools;
+    this.levelIndex = 0; // 0: basics, 1: intermediate, 2: advanced
+    this.sequence = [];
     this.learned = [];
     this.page = 0;
   };
   Learning.prototype.nextConcept = function(){
-    if(this.learned.length >= this.concepts.length) return null;
-    return this.concepts[this.learned.length];
+    // Determine current pool based on levelIndex
+    var poolName = this.levelIndex === 0 ? 'basics' : (this.levelIndex === 1 ? 'intermediate' : 'advanced');
+    var pool = this.pools[poolName] || [];
+    // Index within current pool
+    var idx = this.learned.filter(function(e){return e && e._tier === poolName;}).length;
+    var entry = pool[idx];
+    if (!entry) {
+      // If pool exhausted, try next tier; else fallback to any remaining
+      if (this.levelIndex < 2) {
+        this.levelIndex += 1;
+        return this.nextConcept();
+      }
+      var remaining = [];
+      var seen = new Set(this.learned.map(function(e){return (e && (e.title||e)).toLowerCase();}));
+      ['basics','intermediate','advanced'].forEach(function(n){
+        (this.pools[n]||[]).forEach(function(e){
+          var k = String(e.title||e).toLowerCase();
+          if (!seen.has(k)) remaining.push(e);
+        });
+      }, this);
+      entry = remaining[0];
+      if (!entry) return null;
+    }
+    // annotate tier for stats
+    if (typeof entry === 'object') entry._tier = poolName;
+    return entry;
   };
   Learning.prototype.addLearned = function(text){
     this.learned.push(text);
@@ -83,7 +114,7 @@
   window.ConceptStats = window.ConceptStats || {player:0, enemies:0};
   window.MusicWasPlayingOnBookOpen = false;
 
-  // Simple level goals (number of concepts collected)
+  // Level goals aligned with tiers
   window.QuantumLevels = window.QuantumLevels || [5, 12, 20];
   window.QuantumLevelIndex = 0;
 
@@ -116,6 +147,8 @@
       var goals = window.QuantumLevels||[];
       if (lvl < goals.length && instance.learned.length >= goals[lvl]){
         window.QuantumLevelIndex = lvl+1;
+        // Advance learning tier when leveling up
+        instance.levelIndex = Math.min(2, instance.levelIndex + 1);
         Crafty.trigger('LevelUp', {level: window.QuantumLevelIndex});
       }
     } catch(e){ }

@@ -167,6 +167,7 @@ require(["src/traps.js", "src/config.js", "src/actor_object.js", "src/hiscore.js
         "src/tilemap.js",
         "src/player.js",
         "src/enemy.js",
+        "src/learning_tiers.js",
         "src/learning.js",
         "src/scene.splash.js",
         "src/scene.game.js",
