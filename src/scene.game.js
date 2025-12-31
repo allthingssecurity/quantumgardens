@@ -99,12 +99,23 @@ Crafty.scene("main", function() {
      * Triggers to update various game states
      */
      
-    // UpdateStats Event - score, carrots
+    // Level-based HUD
+    var levelMode = true;
+    var goals = (window.QuantumLevels || [5,12,20]);
+    var totalLvls = goals.length;
+    var currentLevel = 1;
+    function updateLevelHUD(){
+        var mine = (window.ConceptStats && window.ConceptStats.player) ? window.ConceptStats.player : 0;
+        var goal = goals[Math.min(currentLevel-1, goals.length-1)] || 0;
+        $('#timer').text('Level ' + currentLevel + '/' + totalLvls + ' — ' + mine + '/' + goal + ' concepts');
+    }
+    // UpdateStats Event - score, carrots + level progress
     Crafty.bind("UpdateStats",function() {
         var carrots = player.get('carrotsCount');
         var mine = (window.ConceptStats && window.ConceptStats.player) ? window.ConceptStats.player : 0;
         var them = (window.ConceptStats && window.ConceptStats.enemies) ? window.ConceptStats.enemies : 0;
         $('#carrots').text('Carrots: '+carrots+' | Concepts: '+mine+' vs '+them);
+        updateLevelHUD();
     });
 
     // When concept learned, also ping stats immediately
@@ -153,29 +164,29 @@ Crafty.scene("main", function() {
     
     var onEnterFrame = function(frame) {
         var currentTime = Date.now();
-        if (gameTimeLeft < currentTime) {
-            Crafty.unbind('EnterFrame');
-            Crafty.stop();
-            //Crafty.trigger("ShowHiscore", {text: undefined, refresh: true}); 
-            Crafty.trigger('ShowSaveHiscore', player.get('carrotsCount'));
-        } else {
-            // --- time left
-            var leftTime = (gameTimeLeft - currentTime) / 1000;
-            var leftMin = Math.floor(leftTime / 60);
-            var leftSec = leftTime % 60;
-            
-            var mins = leftMin.toFixed(0);
-            mins = mins < 10 ? '0' + mins : mins;
-            var sec = leftSec.toFixed(0);
-            sec = sec < 10 ? '0' + sec : sec;
-            $('#timer').text(mins + ':' + sec);
+        // In level mode, ignore countdown timer; HUD shows level progress
+        if (!levelMode) {
+            if (gameTimeLeft < currentTime) {
+                Crafty.unbind('EnterFrame');
+                Crafty.stop();
+                Crafty.trigger('ShowSaveHiscore', player.get('carrotsCount'));
+            } else {
+                var leftTime = (gameTimeLeft - currentTime) / 1000;
+                var leftMin = Math.floor(leftTime / 60);
+                var leftSec = leftTime % 60;
+                var mins = leftMin.toFixed(0);
+                mins = mins < 10 ? '0' + mins : mins;
+                var sec = leftSec.toFixed(0);
+                sec = sec < 10 ? '0' + sec : sec;
+                $('#timer').text(mins + ':' + sec);
+            }
         }
         
         // --- game logic
         var currentTime = Date.now();
         
-        // game turn passed ?
-        if (currentTime > gameTurnTimeLeft) {
+        // game turn passed ? (disabled in level mode)
+        if (!levelMode && currentTime > gameTurnTimeLeft) {
             gameTurnTimeLeft = Date.now() + _Globals.conf.get('gameTurnPeriod'); 
             
             if (tilemap.get('maxCarrots') < _Globals.conf.get('maxCarrotsToSpawn')) {
@@ -212,13 +223,42 @@ Crafty.scene("main", function() {
         onEnterFrame(frame);
     });
     Crafty.trigger("UpdateStats");
+    // Show initial level banner
+    (function(){
+        var tier = (window.QuantumTiering && window.QuantumTiering.names) ? window.QuantumTiering.names[0] : 'Basics';
+        $('#msgs').css('fontSize','42px');
+        $('#msgs').text('Level 1 — ' + tier);
+        $('#msgs').fadeTo(1500, 0);
+    })();
 
-    // Show LevelUp message
+    // Show LevelUp message + apply next level
     Crafty.bind('LevelUp', function(data){
         var lvl = data && data.level ? data.level : 1;
+        currentLevel = Math.min(totalLvls, lvl);
         Crafty.trigger('ShowMsg', 'clear');
         $('#msgs').css('fontSize','42px');
-        $('#msgs').text('Level '+lvl+' reached!');
+        $('#msgs').text('Level '+currentLevel+' reached!');
         $('#msgs').fadeTo(1200, 0);
+        updateLevelHUD();
+        // Apply simple difficulty scaling per level
+        var baseCarrots = [6, 8, 10];
+        var baseMaxEnemies = [6, 10, 14];
+        var idx = Math.max(0, Math.min(currentLevel-1, 2));
+        tilemap.set('maxCarrots', baseCarrots[idx]);
+        _Globals.conf.set('maxEnemiesToSpawn', baseMaxEnemies[idx]);
+        // Show tier name
+        var tierName = (window.QuantumTiering && window.QuantumTiering.names) ? window.QuantumTiering.names[idx] : '';
+        if (tierName) {
+            $('#msgs').css('fontSize','42px');
+            $('#msgs').text('Level '+currentLevel+' — ' + tierName);
+            $('#msgs').fadeTo(1500, 0);
+        }
+        if (currentLevel > totalLvls) {
+            Crafty.unbind('EnterFrame');
+            Crafty.stop();
+            Crafty.trigger('ShowSaveHiscore', player.get('carrotsCount'));
+        }
     });
+    // Final completion guard
+    Crafty.bind('ConceptLearned', function(){ updateLevelHUD(); });
 });
