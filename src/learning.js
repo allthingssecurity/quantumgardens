@@ -9,6 +9,8 @@
     this.pools = pools;
     this.levelIndex = 0; // 0: basics, 1: intermediate, 2: advanced
     this.sequence = [];
+    // Per-tier cursors to deliver the next unseen concept deterministically
+    this.cursors = { basics: 0, intermediate: 0, advanced: 0 };
     // Restore learned concepts from localStorage if available
     var saved = [];
     try {
@@ -22,9 +24,18 @@
     // Determine current pool based on levelIndex
     var poolName = this.levelIndex === 0 ? 'basics' : (this.levelIndex === 1 ? 'intermediate' : 'advanced');
     var pool = this.pools[poolName] || [];
-    // Index within current pool
-    var idx = this.learned.filter(function(e){return e && e._tier === poolName;}).length;
-    var entry = pool[idx];
+    var seen = new Set(this.learned.map(function(e){return String((e && e.title) ? e.title : e).toLowerCase();}));
+    // Advance cursor until an unseen entry is found
+    var idx = this.cursors[poolName] || 0;
+    var entry = null;
+    while (idx < pool.length) {
+      var cand = pool[idx];
+      var key = String((cand && cand.title) ? cand.title : cand).toLowerCase();
+      idx += 1;
+      if (!seen.has(key)) { entry = cand; break; }
+    }
+    // Save cursor
+    this.cursors[poolName] = idx;
     if (!entry) {
       // If pool exhausted, try next tier; else fallback to any remaining
       if (this.levelIndex < 2) {
@@ -32,14 +43,14 @@
         return this.nextConcept();
       }
       var remaining = [];
-      var seen = new Set(this.learned.map(function(e){return (e && (e.title||e)).toLowerCase();}));
       ['basics','intermediate','advanced'].forEach(function(n){
-        (this.pools[n]||[]).forEach(function(e){
-          var k = String(e.title||e).toLowerCase();
+        var list = this.pools[n] || [];
+        list.forEach(function(e){
+          var k = String((e && e.title) ? e.title : e).toLowerCase();
           if (!seen.has(k)) remaining.push(e);
         });
       }, this);
-      entry = remaining[0];
+      entry = remaining[0] || null;
       if (!entry) return null;
     }
     // annotate tier for stats
@@ -47,11 +58,15 @@
     return entry;
   };
   Learning.prototype.addLearned = function(entry){
-    // Deduplicate by title
+    // Deduplicate by title; preserve tier metadata for indexing
     var title = (entry && entry.title) ? entry.title : (typeof entry === 'string' ? entry : 'Concept');
     var key = String(title||'').toLowerCase();
     var exists = this.learned.some(function(e){ return String((e && e.title) ? e.title : e).toLowerCase() === key; });
-    if (!exists){ this.learned.push({title: title, body: (entry && entry.body) ? entry.body : ''}); }
+    if (!exists){
+      var rec = {title: title, body: (entry && entry.body) ? entry.body : ''};
+      if (entry && entry._tier) rec._tier = entry._tier;
+      this.learned.push(rec);
+    }
     this.page = this.learned.length-1;
     try { localStorage.setItem('qg_book', JSON.stringify(this.learned)); } catch(e) {}
   };
