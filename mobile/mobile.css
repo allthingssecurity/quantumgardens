@@ -39,3 +39,7 @@ body, html { background: #000 url('../art/stuz_bg.png'); }
   margin: 0 12px;
 }
 #menu .button { font-size: 18px; padding: 8px 12px; }
+
+/* Overlay mobile menu to ensure visibility */
+#mobile-menu { position: fixed; left: 0; right: 0; bottom: 14vh; width: 100%; text-align: center; z-index: 6500; }
+#mobile-menu .btn { display:inline-block; margin: 0 10px; padding: 10px 14px; color: #fff; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.4); border-radius: 6px; font-size: 16px; }

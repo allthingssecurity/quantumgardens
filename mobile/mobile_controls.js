@@ -8,12 +8,30 @@
       backgroundSize: 'contain', backgroundPosition: 'top center', backgroundRepeat: 'no-repeat',
       backgroundColor: '#000'
     });
-    // Ensure menu shows
+    // Build overlay menu with touch-first handlers
+    var $mm = $('<div id="mobile-menu">\
+      <a id="mm-start" class="btn">Start</a>\
+      <a id="mm-howto" class="btn">How to Play</a>\
+      <a id="mm-hiscore" class="btn">Hiscores</a>\
+      <a id="mm-credits" class="btn">Credits</a>\
+    </div>');
+    $('body').append($mm);
+    function clearSplash(){
+      $stage.css({ backgroundImage: 'none', backgroundSize: '', backgroundPosition: '', backgroundRepeat: '' });
+      $('#mobile-menu').remove();
+    }
+    // Start button
+    $('#mm-start').on('touchstart click', function(ev){ ev.preventDefault(); $('#menu-start').trigger('click'); clearSplash(); });
+    // How to
+    $('#mm-howto').on('touchstart click', function(ev){ ev.preventDefault(); $('#menu-howto').trigger('click'); });
+    // Hiscore
+    $('#mm-hiscore').on('touchstart click', function(ev){ ev.preventDefault(); $('#menu-hiscore').trigger('click'); });
+    // Credits
+    $('#mm-credits').on('touchstart click', function(ev){ ev.preventDefault(); $('#menu-credits').trigger('click'); });
+    // Also keep legacy menu visible as fallback
     $('#menu').show();
     // Clear on Start click
-    $('#menu-start').on('click touchstart', function(){
-      $stage.css({ backgroundImage: 'none', backgroundSize: '', backgroundPosition: '', backgroundRepeat: '' });
-    });
+    $('#menu-start').on('click touchstart', function(){ clearSplash(); });
   });
 
   // Touch UI overlay
