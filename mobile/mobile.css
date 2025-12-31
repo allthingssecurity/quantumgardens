@@ -21,3 +21,21 @@ body, html { background: #000 url('../art/stuz_bg.png'); }
 #btn-push { right: 112px; bottom: 8px; }
 #btn-decoy { right: 200px; bottom: 8px; }
 
+/* Force splash menu to be visible and centered on mobile */
+#menu {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: auto !important;
+  bottom: 10vh !important;
+  width: 100% !important;
+  text-align: center;
+  z-index: 4000;
+  display: block !important;
+}
+#menu > div {
+  position: static !important; /* ignore inline left offsets */
+  display: inline-block;
+  margin: 0 12px;
+}
+#menu .button { font-size: 18px; padding: 8px 12px; }

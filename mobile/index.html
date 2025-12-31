@@ -58,13 +58,13 @@
   <script>
     var ver = new Date().getTime();
     window._Globals = { env:'dev', version:ver, scene:'splash' };
+    // require baseUrl will be set by mobile_bootstrap
     var require = { waitSeconds:15, urlArgs:"bust="+ver };
   </script>
   <!-- Concepts and game bootstrap -->
   <script src="../src/quantum_concepts.js"></script>
-  <script data-main="../src/bootstrap" src="../lib/require.js"></script>
+  <script data-main="mobile_bootstrap" src="../lib/require.js"></script>
   <!-- Mobile scaling + controls -->
   <script src="mobile_controls.js"></script>
 </body>
 </html>
-

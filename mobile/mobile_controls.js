@@ -2,10 +2,14 @@
   // Apply full-cover splash on mobile too
   $(function(){
     var $stage = $('#stage');
+    // Use contain to ensure menu remains visible on tall images
     $stage.css({
       backgroundImage: "url('../art/quantum_splash.png')",
-      backgroundSize: 'cover', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat'
+      backgroundSize: 'contain', backgroundPosition: 'top center', backgroundRepeat: 'no-repeat',
+      backgroundColor: '#000'
     });
+    // Ensure menu shows
+    $('#menu').show();
     // Clear on Start click
     $('#menu-start').on('click touchstart', function(){
       $stage.css({ backgroundImage: 'none', backgroundSize: '', backgroundPosition: '', backgroundRepeat: '' });
@@ -45,4 +49,3 @@
   bindBtn('#btn-push', 81); // Q
   bindBtn('#btn-decoy', 87); // W
 })();
-
