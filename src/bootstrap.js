@@ -48,7 +48,9 @@ require(["src/traps.js", "src/config.js", "src/actor_object.js", "src/hiscore.js
      * Load assets
      */
     Crafty.scene("loading", function() {
-        Crafty.paths({ audio: "sfx/", images: "art/" });
+        // Resolve asset paths correctly for both desktop (/) and mobile (/mobile/)
+        var _prefix = (window.location && window.location.pathname && window.location.pathname.indexOf('/mobile/') !== -1) ? '../' : '';
+        Crafty.paths({ audio: _prefix + "sfx/", images: _prefix + "art/" });
         var assets = {
             images: ['stuz_splash.png'],
             sprites: {
