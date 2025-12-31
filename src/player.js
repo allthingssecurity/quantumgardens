@@ -216,10 +216,13 @@ Player = ActorObject.extend({
                             }                        
                             
                             model.set('pullID', undefined);
-                            // Emit learning entry (title + body object)
+                            // Add concept to book and show cloud
                             if (window.QuantumLearning && window.QuantumConcepts){
                                 var entry = window.QuantumLearning.nextConcept();
-                                if (entry){ Crafty.trigger('ConceptLearned', entry); }
+                                if (entry){ 
+                                    try { window.QuantumLearning.addLearned(entry); } catch(e) {}
+                                    Crafty.trigger('ConceptLearned', entry);
+                                }
                             }
                         }
                     }

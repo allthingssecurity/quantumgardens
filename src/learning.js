@@ -147,10 +147,9 @@
     $c.delay(1600).fadeOut(600);
   }
 
-  // Hooks: when a carrot is collected, show cloud + save to book
+  // Hooks: when a carrot is collected, show cloud (Book already updated by player)
   Crafty.bind('ConceptLearned', function(entry){
     if(!entry) return;
-    instance.addLearned(entry);
     try { window.ConceptStats.player += 1; } catch(e) {}
     Crafty.trigger('UpdateStats');
 
